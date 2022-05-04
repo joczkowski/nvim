@@ -14,18 +14,20 @@ vim.api.nvim_command('set timeoutlen=1000')
 vim.api.nvim_command('set ttimeoutlen=0')
 vim.api.nvim_command('set signcolumn=yes')
 
-
 -- switch two buffers
 vim.api.nvim_set_keymap('n', '<Leader><Leader>', ':b#<CR>', { noremap = true, silent = true })
 
 -- search mappings
 vim.keymap.set('n', '<c-P>', "<cmd>lua require('fzf-lua').files()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>ga', "<cmd>lua require('fzf-lua').buffers()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>a', "<cmd>lua require('fzf-lua').buffers()<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>gg', "<cmd>lua require('fzf-lua').git_status()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>\\', "<cmd>lua require('fzf-lua').live_grep()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>k', "<cmd>lua require('fzf-lua').grep_cWORD()<cr>", { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', '\\', "<cmd>lua require('fzf-lua').live_grep()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>k', "<cmd>lua require('fzf-lua').grep_cword()<cr>", { silent = true, noremap = true })
 vim.api.nvim_set_keymap('v', '<leader>j', "<cmd>lua require('fzf-lua').grep_visual()<cr>", { silent = true, noremap = true })
 
+
+-- display lsp diagnostic float window
+vim.keymap.set('n', '<Leader>e', "<cmd>lua vim.diagnostic.open_float(nil, {focus=false})<CR>", { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap("n", "<leader>xd", "<cmd>Trouble document_diagnostics<cr>",
   {silent = true, noremap = true}
@@ -98,33 +100,39 @@ end)
 local cmp = require'cmp'
 
 cmp.setup{
-  snippet = {                                                                                                                                                                                                                                                                    
-    expand = function(args)                                                                                                                                                                                                                                                      
-      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` user.                                                                                                                                                                                                                  
-    end,                                                                                                                                                                                                                                                                         
+  snippet = {
+    expand = function(args)
+      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` user
+    end,
   },                                                                                                                                                                                                                                                                             
-  sources = {                                                                                                                                                                                                                                                                    
-    { name = 'nvim_lsp'},                                                                                                                                                                                                                                                        
-    -- { name = 'vsnip' },                                                                                                                                                                                                                                                       
-    -- { name = 'buffer' }                                                                                                                                                                                                                                                       
+  sources = {
+    { name = 'nvim_lsp' },
   },                                                                                                                                                                                                                                                                             
-  mapping = {                                                                                                                                                                                                                                                                    
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),                                                                                                                                                                                                                                     
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),                                                                                                                                                                                                                                      
-    ['<C-Space>'] = cmp.mapping.complete(),                                                                                                                                                                                                                                      
-    ['<C-e>'] = cmp.mapping.close(),                                                                                                                                                                                                                                             
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),                                                                                                                                                                                                                           
+  mapping = {
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.close(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
   },
-  completion = {                                                                                                                                                                                                                                                                 
-    completeopt = 'menu,menuone,noinsert',                                                                                                                                                                                                                                       
-  }                                                                                                                                                                                                                                                                              
+  completion = {
+    completeopt = 'menu,menuone,noinsert',
+  }
 }
 
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 
+vim.diagnostic.config({
+  virtual_text = false
+})
+
+-- Show line diagnostics automatically in hover window
 
 require('lspconfig').solargraph.setup{
   capabilities = capabilities,
+  root_dir = lsp.util.root_pattern(".git"),
+  cmd = { "solargraph", "stdio" },
+  settings = { solargraph = { useBundler = true } },
   on_attach = function()
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
@@ -142,6 +150,15 @@ require('lspconfig').tsserver.setup{
 }
 
 require('lspconfig').eslint.setup{
+  on_attach = function()
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
+    vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, {buffer=0})
+  end
+}
+
+
+require('lspconfig').rls.setup{
   on_attach = function()
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
