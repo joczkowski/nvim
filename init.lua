@@ -24,6 +24,7 @@ vim.api.nvim_set_keymap('n', '<Leader>gg', "<cmd>lua require('fzf-lua').git_stat
 vim.api.nvim_set_keymap('n', '\\', "<cmd>lua require('fzf-lua').live_grep()<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>k', "<cmd>lua require('fzf-lua').grep_cword()<cr>", { silent = true, noremap = true })
 vim.api.nvim_set_keymap('v', '<leader>j', "<cmd>lua require('fzf-lua').grep_visual()<cr>", { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', '<C-n>', "<cmd>NERDTreeToggle<cr>", { silent = true, noremap = true })
 
 
 -- display lsp diagnostic float window
@@ -41,6 +42,8 @@ local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
 
+  use 'preservim/nerdtree'
+
   use({
     "ggandor/lightspeed.nvim",
     keys = { "s", "S", "f", "F", "t", "T" },
@@ -56,6 +59,7 @@ require('packer').startup(function()
      requires = { 'kyazdani42/nvim-web-devicons' }
   }
 
+  use "projekt0n/github-nvim-theme"
   use({
     "aserowy/tmux.nvim",
     keys = { "<C-j>", "<C-k>", "<C-h>", "<C-l>" },
@@ -127,48 +131,39 @@ vim.diagnostic.config({
 })
 
 -- Show line diagnostics automatically in hover window
+--
 
-require('lspconfig').solargraph.setup{
+function on_attach_lsp() 
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
+  vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, {buffer=0})
+end
+
+local lsp = require 'lspconfig'
+
+lsp.solargraph.setup{
   capabilities = capabilities,
   root_dir = lsp.util.root_pattern(".git"),
   cmd = { "solargraph", "stdio" },
   settings = { solargraph = { useBundler = true } },
-  on_attach = function()
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
-    vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, {buffer=0})
-  end
+  on_attach = on_attach_lsp
 }
 
-require('lspconfig').tsserver.setup{
+lsp.tsserver.setup{
   capabilities = capabilities,
-  on_attach = function()
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
-    vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, {buffer=0})
-  end
+  on_attach = on_attach_lsp
 }
 
-require('lspconfig').eslint.setup{
-  on_attach = function()
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
-    vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, {buffer=0})
-  end
+lsp.eslint.setup{
+  on_attach = on_attach_lsp
 }
 
-
-require('lspconfig').rls.setup{
-  on_attach = function()
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
-    vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, {buffer=0})
-  end
+lsp.rls.setup{
+  on_attach = on_attach_lsp
 }
 
 require('nvim-treesitter.configs').setup{
-  ensure_installed = { "ruby", "javascript", "typescript" },
-
+  ensure_installed = { "elixir", "ruby", "javascript", "typescript" },
   highlight = {
     enable = true,  -- false will disable the whole extension
     disable = { },  -- list of language that will be disabled
