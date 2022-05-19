@@ -1,18 +1,40 @@
 -- custom mappings
+
 vim.g.mapleader = ' '
-vim.api.nvim_command('set relativenumber')
-vim.api.nvim_command('set noswapfile')
-vim.api.nvim_command('set hidden')
-vim.api.nvim_command('set smarttab')
-vim.api.nvim_command('set tabstop=2')
-vim.api.nvim_command('set shiftwidth=2')
-vim.api.nvim_command('set expandtab')
-vim.api.nvim_command('set hlsearch')
-vim.api.nvim_command('vnoremap <F8> "xy :%s/<C-R>x/')
-vim.api.nvim_command('colorscheme nightfox')
-vim.api.nvim_command('set timeoutlen=1000')
-vim.api.nvim_command('set ttimeoutlen=0')
-vim.api.nvim_command('set signcolumn=yes')
+
+vim.cmd([[
+  set relativenumber
+  set number
+  set noswapfile
+  set hidden
+  set smarttab
+  set tabstop=2
+  set shiftwidth=2
+  set expandtab
+  set hlsearch
+  set timeoutlen=1000
+  set ttimeoutlen=0
+  set signcolumn=yes
+  colorscheme gruvbox
+
+  vnoremap <F8> "xy :%s/<C-R>x/
+
+  function! HideTab()
+    set nonumber
+    set norelativenumber
+    set signcolumn=no
+  endfunction
+
+  function! ShowTab()
+    set number
+    set relativenumber
+    set signcolumn=yes
+  endfunction
+
+  nnoremap <F2> :saveas %:p:h/
+  nnoremap <F9> :call HideTab()<cr>
+  nnoremap <F10> :call ShowTab()<cr>
+]])
 
 -- switch two buffers
 vim.api.nvim_set_keymap('n', '<Leader><Leader>', ':b#<CR>', { noremap = true, silent = true })
@@ -27,10 +49,6 @@ vim.api.nvim_set_keymap('v', '<leader>j', "<cmd>lua require('fzf-lua').grep_visu
 vim.api.nvim_set_keymap('n', '<C-n>', "<cmd>NERDTreeToggle<cr>", { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rl', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%") . ":" . line("."))<CR>', { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rb', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%"))<CR>', { silent = true, noremap = true })
-
-vim.api.nvim_set_keymap('n', '<leader>rb', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%"))<CR>', { silent = true, noremap = true })
-
-
 
 -- display lsp diagnostic float window
 vim.keymap.set('n', '<Leader>e', "<cmd>lua vim.diagnostic.open_float(nil, {focus=false})<CR>", { noremap = true, silent = true })
@@ -74,6 +92,7 @@ require('packer').startup(function()
     config = [[require('config.tmux')]],
   })
 
+  use "williamboman/nvim-lsp-installer"
   use "neovim/nvim-lspconfig"
 
   use "terrortylor/nvim-comment"
@@ -92,13 +111,10 @@ require('packer').startup(function()
   use 'hrsh7th/nvim-cmp'
 
   use {
-  "folke/trouble.nvim",
-  requires = "kyazdani42/nvim-web-devicons",
-  config = function()
+    "folke/trouble.nvim",
+    requires = "kyazdani42/nvim-web-devicons",
+    config = function()
       require("trouble").setup {
-        -- your configuration comes here
-        -- or leave it empty to use the default settings
-        -- refer to the configuration section below
       }
     end
   }
@@ -109,6 +125,10 @@ require('packer').startup(function()
   use 'airblade/vim-gitgutter'
 
   use 'preservim/vimux'
+
+  use { "ellisonleao/gruvbox.nvim" }
+
+  use { 'simrat39/rust-tools.nvim' }
 end)
 
 local cmp = require'cmp'
@@ -156,9 +176,6 @@ vim.diagnostic.config({
   virtual_text = false
 })
 
--- Show line diagnostics automatically in hover window
---
-
 function on_attach_lsp() 
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
   vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
@@ -187,6 +204,12 @@ lsp.eslint.setup{
 lsp.rls.setup{
   on_attach = on_attach_lsp
 }
+
+lsp.rust_analyzer.setup{
+  on_attach = on_attach_lsp
+}
+
+require("nvim-lsp-installer").setup {}
 
 require('nvim-treesitter.configs').setup{
   ensure_installed = { "elixir", "ruby", "javascript", "typescript" },
