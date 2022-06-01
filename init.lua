@@ -15,7 +15,8 @@ vim.cmd([[
   set timeoutlen=1000
   set ttimeoutlen=0
   set signcolumn=yes
-  colorscheme gruvbox
+  colorscheme nightfox
+  set cursorline
 
   vnoremap <F8> "xy :%s/<C-R>x/
 
@@ -49,6 +50,7 @@ vim.api.nvim_set_keymap('v', '<leader>j', "<cmd>lua require('fzf-lua').grep_visu
 vim.api.nvim_set_keymap('n', '<C-n>', "<cmd>NERDTreeToggle<cr>", { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rl', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%") . ":" . line("."))<CR>', { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rb', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%"))<CR>', { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>td', '<cmd>e ~/todo.org<CR>', { silent = true, noremap = true })
 
 -- display lsp diagnostic float window
 vim.keymap.set('n', '<Leader>e', "<cmd>lua vim.diagnostic.open_float(nil, {focus=false})<CR>", { noremap = true, silent = true })
@@ -65,6 +67,7 @@ vim.api.nvim_set_keymap("n", "<leader>xq", "<cmd>Trouble quickfix<cr>",
 
 local use = require('packer').use
 
+-- PACKER
 require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
 
@@ -207,6 +210,19 @@ lsp.rls.setup{
 
 lsp.rust_analyzer.setup{
   on_attach = on_attach_lsp
+}
+
+lsp.csharp_ls.setup{
+  capabilities = capabilities,
+  on_attach = on_attach_lsp
+}
+
+require("fzf-lua").setup {
+  winopts = { 
+    preview = { 
+      layout = 'vertical'
+    }
+  },
 }
 
 require("nvim-lsp-installer").setup {}
