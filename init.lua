@@ -15,6 +15,7 @@ vim.cmd([[
   set timeoutlen=1000
   set ttimeoutlen=0
   set signcolumn=yes
+  set colorcolumn=80,100
   colorscheme nightfox
   set cursorline
 
@@ -41,12 +42,12 @@ vim.cmd([[
 vim.api.nvim_set_keymap('n', '<Leader><Leader>', ':b#<CR>', { noremap = true, silent = true })
 
 -- search mappings
-vim.keymap.set('n', '<c-P>', "<cmd>lua require('fzf-lua').files()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>a', "<cmd>lua require('fzf-lua').buffers()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>gg', "<cmd>lua require('fzf-lua').git_status()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '\\', "<cmd>lua require('fzf-lua').live_grep()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>k', "<cmd>lua require('fzf-lua').grep_cword()<cr>", { silent = true, noremap = true })
-vim.api.nvim_set_keymap('v', '<leader>j', "<cmd>lua require('fzf-lua').grep_visual()<cr>", { silent = true, noremap = true })
+vim.keymap.set('n', '<c-P>', "<cmd>lua require('telescope.builtin').find_files()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>a', "<cmd>lua require('telescope.builtin').buffers()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>gg', "<cmd>lua require('telescope.builtin').git_status()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '\\', "<cmd>lua require('telescope.builtin').grep_string()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>k', '<cmd>lua require("telescope.builtin").grep_string()<cr> . "\'" . expand("<cword>")', { silent = true, noremap = true })
+-- vim.api.nvim_set_keymap('v', '<leader>j', "<cmd>lua require('telescope.builtin').grep_visual()<cr>", { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<C-n>', "<cmd>NERDTreeToggle<cr>", { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rl', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%") . ":" . line("."))<CR>', { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rb', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%"))<CR>', { silent = true, noremap = true })
@@ -73,6 +74,13 @@ require('packer').startup(function()
 
   use 'preservim/nerdtree'
 
+  use {
+    'nvim-telescope/telescope.nvim',
+    requires = { {'nvim-lua/plenary.nvim'} }
+  }
+
+  use {'nvim-telescope/telescope-fzf-native.nvim', run = 'make'}
+
   use({
     "ggandor/lightspeed.nvim",
     keys = { "s", "S", "f", "F", "t", "T" },
@@ -83,9 +91,30 @@ require('packer').startup(function()
     end,
   })
 
-  use { 'ibhagwan/fzf-lua',
-  -- optional for icon support
-     requires = { 'kyazdani42/nvim-web-devicons' }
+  use {
+    "windwp/nvim-autopairs",
+    config = function()
+      require("nvim-autopairs").setup({
+        check_ts = true,
+        ts_config = {
+          lua = { "string", "source" },
+          javascript = { "string", "template_string" },
+          ruby = { "string" }, 
+        },
+        disable_filetype = { "TelescopePrompt", "spectre_panel" },
+        fast_wrap = {
+          map = "<M-e>",
+          chars = { "{", "[", "(", '"', "'" },
+          pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], "%s+", ""),
+          offset = 0, -- Offset from pattern match
+          end_key = "$",
+          keys = "qwertyuiopzxcvbnmasdfghjkl",
+          check_comma = true,
+          highlight = "PmenuSel",
+          highlight_grey = "LineNr",
+        },
+      })
+    end
   }
 
   use "projekt0n/github-nvim-theme"
@@ -217,12 +246,9 @@ lsp.csharp_ls.setup{
   on_attach = on_attach_lsp
 }
 
-require("fzf-lua").setup {
-  winopts = { 
-    preview = { 
-      layout = 'vertical'
-    }
-  },
+lsp.clangd.setup{
+  capabilities = capabilities,
+  on_attach = on_attach_lsp
 }
 
 require("nvim-lsp-installer").setup {}
@@ -255,3 +281,21 @@ require("indent_blankline").setup{
     show_current_context = true,
     show_current_context_start = true,
 }
+
+local cmp_autopairs = require "nvim-autopairs.completion.cmp"
+local cmp_status_ok, cmp = pcall(require, "cmp")
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done { map_char = { tex = "" } })
+
+require('telescope').setup {
+  defaults = { file_ignore_patterns = {"vendor", "node_modules", "tmp", "bin", "log", "coverage"} },
+  extension = {
+    fzf = {
+      fuzzy = true,
+      override_generic_sorter = true,
+      override_file_sorter = true,
+      case_mode = "smart_case"
+    }
+  }
+}
+
+require('telescope').load_extension('fzf')
