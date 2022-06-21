@@ -1,6 +1,6 @@
 -- custom mappings
 
-vcm.g.mapleader = ' '
+vim.g.mapleader = ' '
 
 vim.cmd([[
   set relativenumber
