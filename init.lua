@@ -164,6 +164,9 @@ require('packer').startup(function()
   use { "ellisonleao/gruvbox.nvim" }
 
   use { 'simrat39/rust-tools.nvim' }
+
+  use { 'hrsh7th/vim-vsnip' }
+  use { 'hrsh7th/vim-vsnip-integ' }
 end)
 
 local cmp = require'cmp'
@@ -176,6 +179,7 @@ cmp.setup{
   },                                                                                                                                                                                                                                                                             
   sources = {
     { name = 'nvim_lsp' },
+    { name = 'vsnip' },
     { name = 'path' },
     { name = 'buffer' }
   },                                                                                                                                                                                                                                                                             
@@ -184,7 +188,7 @@ cmp.setup{
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
     ['<C-space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.close(),
-    ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
     ["<C-j>"] = cmp.mapping(function()
       if cmp.visible() then
         cmp.select_next_item()
@@ -222,7 +226,7 @@ local lsp = require 'lspconfig'
 lsp.solargraph.setup{
   capabilities = capabilities,
   root_dir = lsp.util.root_pattern(".git"),
-  cmd = { "solargraph", "stdio" },
+  cmd = { "bundle", "exec", "solargraph", "stdio" },
   settings = { solargraph = { useBundler = true } },
   on_attach = on_attach_lsp
 }
@@ -236,12 +240,28 @@ lsp.eslint.setup{
   on_attach = on_attach_lsp
 }
 
-lsp.rls.setup{
-  on_attach = on_attach_lsp
-}
-
-lsp.rust_analyzer.setup{
-  on_attach = on_attach_lsp
+lsp.rust_analyzer.setup {
+  on_attach = on_attach_lsp,
+  settings = {
+    ["rust-analyzer"] = {
+      assist = {
+        importMergeBehavior = "last",
+        importPrefix = "by_self",
+      },
+      diagnostics = {
+        disabled = { "unresolved-import" }
+      },
+      cargo = {
+          loadOutDirsFromCheck = true
+      },
+      procMacro = {
+          enable = true
+      },
+      checkOnSave = {
+          command = "clippy"
+      },
+    }
+  }
 }
 
 lsp.csharp_ls.setup{
@@ -249,15 +269,10 @@ lsp.csharp_ls.setup{
   on_attach = on_attach_lsp
 }
 
-lsp.clangd.setup{
-  capabilities = capabilities,
-  on_attach = on_attach_lsp
-}
-
 require("nvim-lsp-installer").setup {}
 
 require('nvim-treesitter.configs').setup{
-  ensure_installed = { "elixir", "ruby", "javascript", "typescript" },
+  ensure_installed = { "rust", "elixir", "ruby", "javascript", "typescript" },
   highlight = {
     enable = true,  -- false will disable the whole extension
     disable = { },  -- list of language that will be disabled
@@ -290,7 +305,7 @@ local cmp_status_ok, cmp = pcall(require, "cmp")
 cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done { map_char = { tex = "" } })
 
 require('telescope').setup {
-  defaults = { file_ignore_patterns = {"vendor", "node_modules", "tmp", "bin", "log", "coverage"} },
+  defaults = { file_ignore_patterns = {"vendor", "node_modules", "tmp", "log", "coverage"} },
   extension = {
     fzf = {
       fuzzy = true,
@@ -302,3 +317,44 @@ require('telescope').setup {
 }
 
 require('telescope').load_extension('fzf')
+
+
+
+local rust_opts = {
+  tools = {
+    autoSetHints = true,
+    hover_with_actions = true,
+    inlay_hints = {
+      show_parameter_hints = true,
+      parameter_hints_prefix = "",
+      other_hints_prefix = "",
+      },
+    },
+    server = {
+      settings = {
+        ["rust-analyzer"] = {
+          assist = {
+            importEnforceGranularity = true,
+            importPrefix = "crate"
+          },
+          cargo = {
+            allFeatures = true
+          },
+          checkOnSave = {
+            -- default: `cargo check`
+            command = "clippy"
+          },
+        },
+        inlayHints = {
+          lifetimeElisionHints = {
+            enable = true,
+            useParameterNames = true
+          },
+      },
+    }
+  }
+}
+
+require('rust-tools').setup(rust_opts)
+
+
