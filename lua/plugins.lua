@@ -44,6 +44,7 @@ require('packer').startup(function()
   use 'rcarriga/nvim-dap-ui'
   use 'theHamsta/nvim-dap-virtual-text'
   use 'nvim-telescope/telescope-dap.nvim'
+  use 'slime-lang/vim-slime-syntax'
   use { 'bluz71/vim-moonfly-colors', branch = 'cterm-compat' }
   use {
 
