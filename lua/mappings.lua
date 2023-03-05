@@ -12,6 +12,7 @@ vim.cmd([[
   set hlsearch
   set timeoutlen=1000
   set ttimeoutlen=0
+  colorscheme monokai
   colorscheme moonfly
   set mouse=
   set signcolumn=yes

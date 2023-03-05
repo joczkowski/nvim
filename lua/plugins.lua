@@ -20,6 +20,7 @@ require('packer').startup(function()
   })
   use({ "mhanberg/elixir.nvim", requires = { "neovim/nvim-lspconfig", "nvim-lua/plenary.nvim" }})
   use "windwp/nvim-autopairs"
+  use 'tanvirtin/monokai.nvim'
   use "projekt0n/github-nvim-theme"
   use "alexghergh/nvim-tmux-navigation"
   use "github/copilot.vim"
