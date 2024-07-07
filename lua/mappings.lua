@@ -48,62 +48,76 @@ vim.cmd([[
   nnoremap <silent> <C-Space> :lua require'nvim-tmux-navigation'.NvimTmuxNavigateNext()<cr>
 ]])
 
+
+
+local set = vim.keymap.set
+
+--
 -- switch two buffers
-vim.api.nvim_set_keymap('n', '<Leader><Leader>', ':b#<CR>', { noremap = true, silent = true })
+--
+set('n', '<Leader><Leader>', ':b#<CR>', { noremap = true, silent = true })
+--
+-- end switch two buffers
+--
 
+
+--
 -- search mappings
-vim.keymap.set('n', '<c-P>', "<cmd>lua require('fzf-lua').files()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '\\', "<cmd>lua require('fzf-lua').live_grep()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('v', '<leader>k', "<cmd>lua require('fzf-lua').grep_visual()<cr>", { silent = true, noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>k', "<cmd>lua require('fzf-lua').grep_cword()<cr>", { silent = true, noremap = true })
-vim.api.nvim_set_keymap('n', '<Leader>a', "<cmd>lua require('fzf-lua').buffers()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>gg', "<cmd>lua require('fzf-lua').git_status()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<C-n>', "<cmd>NERDTreeFind<cr>", { silent = true, noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>rl', '<cmd>call VimuxRunCommand("clear; dev bt bundle exec rspec " . bufname("%") . ":" . line("."))<CR>', { silent = true, noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>rb', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%"))<CR>', { silent = true, noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>rc', '<cmd>call VimuxRunCommand(@*)<CR>', { silent = true, noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>td', '<cmd>e ~/todo.org<CR>', { silent = true, noremap = true })
+-- 
+set('n', '<c-P>', "<cmd>lua require('fzf-lua').files()<CR>", { noremap = true, silent = true })
+set('n', '\\', "<cmd>lua require('fzf-lua').live_grep()<CR>", { noremap = true, silent = true })
+set('v', '<leader>k', "<cmd>lua require('fzf-lua').grep_visual()<cr>", { silent = true, noremap = true })
+set('n', '<leader>k', "<cmd>lua require('fzf-lua').grep_cword()<cr>", { silent = true, noremap = true })
+set('n', '<Leader>a', "<cmd>lua require('fzf-lua').buffers()<CR>", { noremap = true, silent = true })
+set('n', '<Leader>gg', "<cmd>lua require('fzf-lua').git_status()<CR>", { noremap = true, silent = true })
+--
+-- end search mappings
+--
 
-vim.keymap.set('n', '<Leader>1', '<cmd>Telescope harpoon marks<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>2', '<cmd>lua require("harpoon.mark").add_file()<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<F2>', '<cmd>lua require("harpoon.mark").clear_all()<CR>', { noremap = true, silent = true })
+--
+-- nerdtree mappings
+-- 
+set('n', '<C-n>', "<cmd>NERDTreeFind<cr>", { silent = true, noremap = true })
+--
+-- end nerdtree mappings
+--
 
--- display lsp diagnostic float window
-vim.keymap.set('n', '<Leader>e', "<cmd>lua vim.diagnostic.open_float(nil, {focus=false})<CR>", { noremap = true, silent = true })
+--
+-- rspec integration mappings
+-- 
+set('n', '<leader>rl', '<cmd>call VimuxRunCommand("clear; dev bt bundle exec rspec " . bufname("%") . ":" . line("."))<CR>', { silent = true, noremap = true })
+set('n', '<leader>rb', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%"))<CR>', { silent = true, noremap = true })
+--
+-- end rspec integration mappings
+--
 
--- code action
-vim.keymap.set('n', '<Leader>ca', "<cmd>lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true })
+--
+-- run command mappings
+--
+set('n', '<leader>rc', '<cmd>call VimuxRunCommand(@*)<CR>', { silent = true, noremap = true })
+--
+-- end run command mappings
+--
 
--- hover name
-vim.keymap.set('n', '<Leader>h', "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
+set('n', '<leader>td', '<cmd>e ~/todo.org<CR>', { silent = true, noremap = true })
 
-vim.api.nvim_set_keymap("n", "<leader>xd", "<cmd>Trouble document_diagnostics<cr>",
+
+---
+--- lsp
+---
+set('n', '<Leader>e', "<cmd>lua vim.diagnostic.open_float(nil, {focus=false})<CR>", { noremap = true, silent = true })
+set('n', '<Leader>ca', "<cmd>lua vim.lsp.buf.code_action()<CR>", { noremap = true, silent = true })
+set('n', '<Leader>h', "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, silent = true })
+set('n', 'gd',        "<cmd>lua vim.lsp.buf.definition()<CR>")
+---
+--- lsp
+---
+
+set("n", "<leader>xd", "<cmd>Trouble document_diagnostics<cr>",
   {silent = true, noremap = true}
 )
-vim.api.nvim_set_keymap("n", "<leader>xq", "<cmd>Trouble quickfix<cr>",
+set("n", "<leader>xq", "<cmd>Trouble quickfix<cr>",
   {silent = true, noremap = true}
 )
 
-function vim.getVisualSelection()
-	vim.cmd('noau normal! "vy"')
-	local text = vim.fn.getreg('v')
-	vim.fn.setreg('v', {})
-
-	text = string.gsub(text, "\n", "")
-	if #text > 0 then
-		return text
-	else
-		return ''
-	end
-end
-
-
-local keymap = vim.keymap.set
--- local tb = require('telescope.builtin')
 local opts = { noremap = true, silent = true }
-
-keymap('n', '<space>G', ':Telescope live_grep<cr>', opts)
-keymap('v', '<space>G', function()
-	local text = vim.getVisualSelection()
-	tb.live_grep({ default_text = text })
-end, opts)

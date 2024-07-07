@@ -42,4 +42,8 @@ require('packer').startup(function()
   use { 'bluz71/vim-moonfly-colors', branch = 'cterm-compat' }
   use { 'folke/trouble.nvim', requires = 'kyazdani42/nvim-web-devicons', config = function() require('trouble').setup {} end }
   use { 'ggandor/lightspeed.nvim', keys = { "s", "S", "f", "F", "t", "T" }, config = function() require("lightspeed").setup({ repeat_ft_with_target_char = true }) end }
+  use {
+    "nvim-telescope/telescope-file-browser.nvim",
+    requires = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
+  }
 end)
