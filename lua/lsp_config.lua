@@ -4,11 +4,6 @@ vim.diagnostic.config({
   virtual_text = false
 })
 
--- vim.keymap.set('n', 'K', vim.lsp.buf.hover, {buffer=0})
--- vim.keymap.set('n', 'gd', vim.lsp.buf.definition, {buffer=0})
--- vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, {buffer=0})
---
---
 local lsp = require 'lspconfig'
 
 local on_attach = function(client, bufnr)
@@ -18,12 +13,21 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
 end
 
-lsp.solargraph.setup{
-  capabilities = capabilities,
-  root_dir = lsp.util.root_pattern(".git"),
-  cmd = { "solargraph", "stdio" },
-  -- settings = { solargraph = { useBundler = true } },
+lsp.pyright.setup{
   on_attach = on_attach
+}
+
+-- lsp.solargraph.setup{
+--   capabilities = capabilities,
+--   root_dir = lsp.util.root_pattern(".git"),
+--   cmd = { "solargraph", "stdio" },
+--   -- settings = { solargraph = { useBundler = true } },
+--   on_attach = on_attach
+-- }
+
+lsp.ruby_lsp.setup {
+  capabilities = capabilities,
+  on_attach = on_attach_lsp
 }
 
 lsp.tsserver.setup{
@@ -35,17 +39,9 @@ lsp.eslint.setup{
   on_attach = on_attach_lsp
 }
 
--- lsp.elixirls.setup{
---   capabilities = capabilities,
---   on_attach = on_attach_lsp
--- }
-
--- lsp.sorbet.setup{
---   capabilities = capabilities,
---   on_attach = on_attach_lsp,
---   cmd = { "srb", "tc", "--lsp" } 
--- ,
--- }
+lsp.gopls.setup{
+  on_attach = on_attach_lsp
+}
 
 lsp.rust_analyzer.setup {
   on_attach = on_attach_lsp,

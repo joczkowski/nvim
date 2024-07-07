@@ -52,14 +52,14 @@ vim.cmd([[
 vim.api.nvim_set_keymap('n', '<Leader><Leader>', ':b#<CR>', { noremap = true, silent = true })
 
 -- search mappings
-vim.keymap.set('n', '<c-P>', "<cmd>lua require('telescope.builtin').find_files()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>a', "<cmd>lua require('telescope.builtin').buffers()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<Leader>gg', "<cmd>lua require('telescope.builtin').git_status()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '\\', "<cmd>lua require('telescope.builtin').live_grep()<CR>", { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>k', '<cmd>lua require("telescope.builtin").grep_string()<CR>', { silent = true, noremap = true })
-vim.api.nvim_set_keymap('v', '<leader>j', "<cmd>lua require('telescope.builtin').grep_visual()<cr>", { silent = true, noremap = true })
+vim.keymap.set('n', '<c-P>', "<cmd>lua require('fzf-lua').files()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '\\', "<cmd>lua require('fzf-lua').live_grep()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('v', '<leader>k', "<cmd>lua require('fzf-lua').grep_visual()<cr>", { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>k', "<cmd>lua require('fzf-lua').grep_cword()<cr>", { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', '<Leader>a', "<cmd>lua require('fzf-lua').buffers()<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>gg', "<cmd>lua require('fzf-lua').git_status()<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-n>', "<cmd>NERDTreeFind<cr>", { silent = true, noremap = true })
-vim.api.nvim_set_keymap('n', '<leader>rl', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%") . ":" . line("."))<CR>', { silent = true, noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>rl', '<cmd>call VimuxRunCommand("clear; dev bt bundle exec rspec " . bufname("%") . ":" . line("."))<CR>', { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rb', '<cmd>call VimuxRunCommand("clear; bundle exec rspec " . bufname("%"))<CR>', { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>rc', '<cmd>call VimuxRunCommand(@*)<CR>', { silent = true, noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>td', '<cmd>e ~/todo.org<CR>', { silent = true, noremap = true })
@@ -99,7 +99,7 @@ end
 
 
 local keymap = vim.keymap.set
-local tb = require('telescope.builtin')
+-- local tb = require('telescope.builtin')
 local opts = { noremap = true, silent = true }
 
 keymap('n', '<space>G', ':Telescope live_grep<cr>', opts)

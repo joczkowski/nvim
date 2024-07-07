@@ -38,6 +38,11 @@ cmp.setup{
   }
 }
 
+require'fzf-lua'.setup {
+  grep = {
+    cmd = "rg --with-filename"
+  }
+}
 require("nvim-lsp-installer").setup {}
 
 require('nvim-treesitter.configs').setup{
@@ -63,37 +68,31 @@ incremental_selection = {
   },
 }
 
-require("indent_blankline").setup{
-    -- for example, context is off by default, use this to turn it on
-    show_current_context = true,
-    show_current_context_start = true,
-}
-
 local cmp_autopairs = require "nvim-autopairs.completion.cmp"
 local cmp_status_ok, cmp = pcall(require, "cmp")
 cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done { map_char = { tex = "" } })
 
 
-require('telescope').setup {
-  extensions = {
-    fzf = {
-      fuzzy = true,                    -- false will only do exact matching
-      override_generic_sorter = true,  -- override the generic sorter
-      override_file_sorter = true,     -- override the file sorter
-      case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
-    }
-  },
-  defaults = {
-    layout_strategy = 'center',
-    layout_config = {
-      prompt_position='bottom',
-      layout_strategy='center',
-      width=0.95,
-    }
-  }
-}
+-- require('telescope').setup {
+--   extensions = {
+--     fzf = {
+--       fuzzy = true,                    -- false will only do exact matching
+--       override_generic_sorter = true,  -- override the generic sorter
+--       override_file_sorter = true,     -- override the file sorter
+--       case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+--     }
+--   },
+--   defaults = {
+--     layout_strategy = 'center',
+--     layout_config = {
+--       prompt_position='bottom',
+--       layout_strategy='center',
+--       width=0.95,
+--     }
+--   }
+-- }
 
-require('telescope').load_extension('fzf')
+-- require('telescope').load_extension('fzf')
 
 
 -- local rust_opts = {
@@ -183,5 +182,5 @@ require'nvim-tmux-navigation'.setup {
     disable_when_zoomed = true -- defaults to false
 }
 
-require("telescope").load_extension('harpoon')
+-- require("telescope").load_extension('harpoon')
 
