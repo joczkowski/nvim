@@ -41,6 +41,12 @@ cmp.setup{
 require'fzf-lua'.setup {
   grep = {
     cmd = "rg --with-filename"
+  },
+  winopts = {
+    fullscreen = true,
+    preview = {
+      layout = 'vertical'
+    }
   }
 }
 require("nvim-lsp-installer").setup {}
@@ -73,26 +79,21 @@ local cmp_status_ok, cmp = pcall(require, "cmp")
 cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done { map_char = { tex = "" } })
 
 
--- require('telescope').setup {
---   extensions = {
---     fzf = {
---       fuzzy = true,                    -- false will only do exact matching
---       override_generic_sorter = true,  -- override the generic sorter
---       override_file_sorter = true,     -- override the file sorter
---       case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
---     }
---   },
---   defaults = {
---     layout_strategy = 'center',
---     layout_config = {
---       prompt_position='bottom',
---       layout_strategy='center',
---       width=0.95,
---     }
---   }
--- }
+require('telescope').setup {
+  extensions = {
+    fzf = {
+      fuzzy = true,                    -- false will only do exact matching
+      override_generic_sorter = true,  -- override the generic sorter
+      override_file_sorter = true,     -- override the file sorter
+      case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+    }
+  },
+  defaults = {
+    layout_strategy = 'vertical',
+  }
+}
 
--- require('telescope').load_extension('fzf')
+require('telescope').load_extension('fzf')
 
 
 -- local rust_opts = {

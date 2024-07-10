@@ -12,8 +12,7 @@ vim.cmd([[
   set hlsearch
   set timeoutlen=1000
   set ttimeoutlen=0
-  colorscheme monokai
-  colorscheme moonfly
+  colorscheme habamax
   set mouse=
   set signcolumn=yes
   set colorcolumn=80,100
@@ -46,6 +45,8 @@ vim.cmd([[
   nnoremap <silent> <C-l> :lua require'nvim-tmux-navigation'.NvimTmuxNavigateRight()<cr>
   nnoremap <silent> <C-\> :lua require'nvim-tmux-navigation'.NvimTmuxNavigateLastActive()<cr>
   nnoremap <silent> <C-Space> :lua require'nvim-tmux-navigation'.NvimTmuxNavigateNext()<cr>
+  vnoremap <leader>y  "+y
+  nnoremap <leader>p "+p
 ]])
 
 
@@ -64,12 +65,20 @@ set('n', '<Leader><Leader>', ':b#<CR>', { noremap = true, silent = true })
 --
 -- search mappings
 -- 
-set('n', '<c-P>', "<cmd>lua require('fzf-lua').files()<CR>", { noremap = true, silent = true })
-set('n', '\\', "<cmd>lua require('fzf-lua').live_grep()<CR>", { noremap = true, silent = true })
-set('v', '<leader>k', "<cmd>lua require('fzf-lua').grep_visual()<cr>", { silent = true, noremap = true })
-set('n', '<leader>k', "<cmd>lua require('fzf-lua').grep_cword()<cr>", { silent = true, noremap = true })
-set('n', '<Leader>a', "<cmd>lua require('fzf-lua').buffers()<CR>", { noremap = true, silent = true })
-set('n', '<Leader>gg', "<cmd>lua require('fzf-lua').git_status()<CR>", { noremap = true, silent = true })
+-- set('n', '<c-P>', "<cmd>lua require('fzf-lua').files()<CR>", { noremap = true, silent = true })
+-- set('n', '\\', "<cmd>lua require('fzf-lua').live_grep()<CR>", { noremap = true, silent = true })
+-- set('v', '<leader>k', "<cmd>lua require('fzf-lua').grep_visual()<cr>", { silent = true, noremap = true })
+-- set('n', '<leader>k', "<cmd>lua require('fzf-lua').grep_cword()<cr>", { silent = true, noremap = true })
+-- set('n', '<Leader>a', "<cmd>lua require('fzf-lua').buffers()<CR>", { noremap = true, silent = true })
+-- set('n', '<Leader>gg', "<cmd>lua require('fzf-lua').git_status()<CR>", { noremap = true, silent = true })
+
+local tbin = require('telescope.builtin')
+set('n', '<c-P>', tbin.find_files, { noremap = true, silent = true })
+set('n', '\\', tbin.live_grep, { noremap = true, silent = true })
+set('v', '<leader>k', tbin.grep_string, { silent = true, noremap = true })
+set('n', '<leader>k', tbin.grep_string, { silent = true, noremap = true })
+set('n', '<Leader>a', tbin.buffers, { noremap = true, silent = true })
+set('n', '<Leader>gg', tbin.git_status, { noremap = true, silent = true })
 --
 -- end search mappings
 --
