@@ -12,7 +12,9 @@ require('packer').startup(function()
   use 'github/copilot.vim'
   use 'williamboman/nvim-lsp-installer'
   use 'neovim/nvim-lspconfig'
+  use "ej-shafran/compile-mode.nvim"
   use 'terrortylor/nvim-comment'
+  use 'Civitasv/cmake-tools.nvim'
   require('nvim_comment').setup()
   use 'nvim-treesitter/nvim-treesitter'
   use 'EdenEast/nightfox.nvim'

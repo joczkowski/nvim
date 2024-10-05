@@ -47,6 +47,7 @@ vim.cmd([[
   nnoremap <silent> <C-Space> :lua require'nvim-tmux-navigation'.NvimTmuxNavigateNext()<cr>
   vnoremap <leader>y  "+y
   nnoremap <leader>p "+p
+  tnoremap <C-q> <C-\><C-n>
 ]])
 
 
@@ -120,6 +121,16 @@ set('n', '<Leader>h', "<cmd>lua vim.lsp.buf.hover()<CR>", { noremap = true, sile
 set('n', 'gd',        "<cmd>lua vim.lsp.buf.definition()<CR>")
 ---
 --- lsp
+---
+---
+--- screen resizing
+---
+vim.api.nvim_set_keymap('n', '<C-Up>', ':resize -2<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-Down>', ':resize +2<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-Left>', ':vertical resize -2<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-Right>', ':vertical resize +2<CR>', { noremap = true, silent = true })
+---
+--- screen resizing
 ---
 
 set("n", "<leader>xd", "<cmd>Trouble document_diagnostics<cr>",
